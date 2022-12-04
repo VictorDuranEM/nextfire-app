@@ -1,6 +1,6 @@
-import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import { getApp, initializeApp } from "firebase/app";
+import { getAuth, GoogleAuthProvider } from "firebase/auth";
+import { collection, DocumentSnapshot, getDocs, getFirestore, limit, query, where } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: "AIzaSyB62LVYoZ7f8tqCFlXoK1cGpZihgXW5qUY",
@@ -12,11 +12,47 @@ const firebaseConfig = {
   measurementId: "G-35BWFBPCRB"
 };
 
+function createFirebaseApp(config: any) {
+  try {
+    return getApp();
+  } catch {
+    return initializeApp(config);
+  }
+}
+
 // Initialize Firebase
-const firebaseApp = initializeApp(firebaseConfig);
+const firebaseApp = createFirebaseApp(firebaseConfig);
 
-// Initialize Firebase Authentication and get a reference to the service
+// Auth exports
 export const auth = getAuth(firebaseApp);
-export const firestore = getFirestore(firebaseApp);
+export const googleAuthProvider = new GoogleAuthProvider();
 
-export default firebaseApp;
+/**
+ * Gets a users/{uid} document with username 
+ * @param {string} username 
+ * @returns userDoc
+ */
+export async function getUserWithUsername(username: string) {
+  const q = query(
+    collection(getFirestore(), 'users'),
+    where('username', '==', username),
+    limit(1)
+  )
+  const userDoc = (await getDocs(q)).docs[0];
+  return userDoc;
+}
+
+/**
+ * Converts a firestore document to JSON
+ * @param {DocumentSnapshot} doc 
+ * @returns JSON
+ */
+export function postToJSON(doc: DocumentSnapshot) {
+  const data = doc.data();
+  return {
+    ...data,
+    // Gotcha! firestore timestamp NOT serializable to JSON. Must convert to milliseconds
+    createdAt: data?.createdAt.toMillis() || 0,
+    updatedAt: data?.updatedAt.toMillis() || 0,
+  };
+}

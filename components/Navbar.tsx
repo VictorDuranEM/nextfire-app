@@ -1,13 +1,10 @@
 import Link from "next/link";
-
-type user = {
-  photoURL: string;
-} | null;
+import { useContext } from "react";
+import { UserContext } from "../lib/context";
 
 // Top navbar
 export default function Navbar() {
-  const user: user = { photoURL: "https://i.imgur.com/4Y6zqXK.png" };
-  const username = null;
+  const { user, username } = useContext(UserContext);
 
   return (
     <nav className="navbar">
