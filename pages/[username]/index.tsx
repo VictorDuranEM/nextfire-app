@@ -11,8 +11,13 @@ type GetServerSidePropsContext = {
 
 export async function getServerSideProps({ query: urlQuery }: GetServerSidePropsContext) {
   const { username } = urlQuery;
-
   const userDoc = await getUserWithUsername(username);
+  
+  if (!userDoc) {
+    return {
+      notFound: true,
+    }
+  }
 
   // JSON serializable data
   let user = null;

@@ -1,6 +1,7 @@
 import { getApp, initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { collection, DocumentSnapshot, getDocs, getFirestore, limit, query, where } from "firebase/firestore";
+import { getStorage } from 'firebase/storage';
 
 const firebaseConfig = {
   apiKey: "AIzaSyB62LVYoZ7f8tqCFlXoK1cGpZihgXW5qUY",
@@ -26,6 +27,10 @@ const firebaseApp = createFirebaseApp(firebaseConfig);
 // Auth exports
 export const auth = getAuth(firebaseApp);
 export const googleAuthProvider = new GoogleAuthProvider();
+
+// Firestore exports
+export const storage = getStorage(firebaseApp);
+export const STATE_CHANGED = 'state_changed';
 
 /**
  * Gets a users/{uid} document with username 
